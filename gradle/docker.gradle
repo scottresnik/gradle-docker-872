@@ -16,6 +16,10 @@ ext {
     dockerSavedImage = file("build/docker/${project.name}-${project.version}-docker-image.tar")
 }
 
+docker {
+    url = 'tcp://localhost:2375'
+}
+
 task copyDockerFiles(type: Copy, dependsOn: ':assemble') {
     description = 'Copy Dockerfile and required data to build directory'
     from 'src/main/docker'
