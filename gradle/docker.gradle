@@ -1,0 +1,33 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.bmuschko:gradle-docker-plugin:${dockerPluginVersion}"
+    }
+}
+apply plugin: 'com.bmuschko.docker-remote-api'
+
+import com.bmuschko.gradle.docker.tasks.image.*
+
+ext {
+    defaultDockerTag = "${project.name}:${project.version}".toString()
+    dockerTags = [ defaultDockerTag ]
+    dockerSavedImage = file("build/docker/${project.name}-${project.version}-docker-image.tar")
+}
+
+task copyDockerFiles(type: Copy, dependsOn: ':assemble') {
+    description = 'Copy Dockerfile and required data to build directory'
+    from 'src/main/docker'
+    from tasks.getByPath(':jar')
+    into { "${project.buildDir}/docker" }
+    include "*"
+    exclude "**/*.yml"
+}
+
+task buildDocker(type: DockerBuildImage, dependsOn: 'copyDockerFiles') {
+    description = 'Package application as Docker image'
+    group = 'Docker'
+    inputDir = file("${project.buildDir}/docker")
+    tags = project.dockerTags
+}
