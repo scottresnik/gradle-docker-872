@@ -23,7 +23,7 @@ docker {
 task copyDockerFiles(type: Copy, dependsOn: ':assemble') {
     description = 'Copy Dockerfile and required data to build directory'
     from 'src/main/docker'
-    from tasks.getByPath(':jar')
+    from tasks.getByPath(':war')
     into { "${project.buildDir}/docker" }
     include "*"
     exclude "**/*.yml"
